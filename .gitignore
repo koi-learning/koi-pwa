@@ -1,0 +1,18 @@
+# Logs
+logs
+*.log
+yarn-debug.log*
+yarn-error.log*
+
+# Optional eslint cache
+.eslintcache
+
+
+# Distribution Files
+dist
+
+# Node Modules
+node_modules
+
+# VS Code files
+.vscode

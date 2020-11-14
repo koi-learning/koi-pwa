@@ -1,0 +1,15 @@
+{
+    "background_color": "#fff",
+    "name": "KOI Client",
+    "short_name": "KOI",
+    "lang": "en-US",
+    "start_url": "/home",
+    "display": "standalone",
+    "theme_color": "#003359",
+    "icons": [
+      {
+        "src": "img/icon.png",
+        "sizes": "512x512"
+      }
+    ]
+  }
