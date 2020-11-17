@@ -1,0 +1,15 @@
+name: Lint
+
+on: push
+
+jobs:
+  run-linter:
+    name: Run Linter
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out Git repository
+      uses: actions/checkout@v2
+    - name: Install modules
+      run: yarn
+    - name: Run ESLint
+      run: npx eslint .
