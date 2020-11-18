@@ -96,3 +96,20 @@ export class ConfirmDialog extends LitElement {
     }
   };
 }
+
+@customElement("info-dialog")
+export class InfoDialog extends LitElement {
+  @query("mwc-dialog")
+  dialog: Dialog;
+
+  show() {
+    this.dialog.show();
+  }
+
+  render() {
+    return html` <mwc-dialog id="deleteDialog">
+      <p><slot></slot></p>
+      <mwc-button slot="primaryAction" dialogAction="ok"> OK </mwc-button>
+    </mwc-dialog>`;
+  }
+}

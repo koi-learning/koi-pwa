@@ -12,7 +12,7 @@ import { Model, ModelId } from "@src/store/interface";
 import { RootState, store } from "@src/store/store";
 import { modelKey, delModel, getModel, changeModel } from "@src/store/model";
 import { router } from "..";
-import { ConfirmDialog } from "@src/components/dialogs";
+import { ConfirmDialog, InfoDialog } from "@src/components/dialogs";
 import { addInstance } from "@src/store/instance";
 import { hasModelRight, loadModelRights } from "@src/rightsHelper";
 
@@ -20,6 +20,8 @@ import { hasModelRight, loadModelRights } from "@src/rightsHelper";
 export class ModelPage extends BasePage {
   isSubPage = true;
   @property() location: RouterLocation = router.location;
+
+  @property() info: TemplateResult = html``;
 
   @property({ attribute: false }) model: Model;
   @property({ attribute: false }) right: {
@@ -40,6 +42,8 @@ export class ModelPage extends BasePage {
   deleteDialog: ConfirmDialog;
   @query("#finalizeDialog")
   finalizeDialog: ConfirmDialog;
+  @query("#infoDialog")
+  infoDialog: InfoDialog;
 
   static get styles() {
     return super.styles.concat(
@@ -107,7 +111,7 @@ export class ModelPage extends BasePage {
           icon="check_circle"
           slot="actionItems"
           ?disabled=${this.model && this.model.finalized}
-          @click=${() => this.finalizeDialog.show()}
+          @click=${() => this.requestFinialize()}
         ></mwc-icon-button>
         <mwc-icon-button
           icon="delete"
@@ -135,32 +139,36 @@ export class ModelPage extends BasePage {
       <confirm-dialog id="finalizeDialog" @confirm=${this.finalize}>
         Are you sure you want to finalize this model?
       </confirm-dialog>
+
+      <info-dialog id="infoDialog" @confirm=${this.finalize}>
+        ${this.info}
+      </info-dialog>
     `;
   }
 
   tabs() {
     switch (this.activeTab) {
       case "details":
-        return html`<paper-card
-          ><model-details
+        return html`<paper-card>
+          <model-details
             .model=${this.model}
             .scrollTarget=${this.scrollTarget}
             .editable=${this.right.edit}
             .download=${this.right.download}
-          ></model-details
-        ></paper-card>`;
+          ></model-details>
+        </paper-card>`;
       case "rights":
         return html`<model-access-cards
           .model=${this.model}
           .scrollTarget=${this.scrollTarget}
         ></model-access-cards>`;
       case "instances":
-        return html`<paper-card
-            ><instance-list
+        return html`<paper-card>
+            <instance-list
               .model=${this.model}
               .scrollTarget=${this.scrollTarget}
-            ></instance-list
-          ></paper-card>
+            ></instance-list>
+          </paper-card>
           ${this.right.instantiate
             ? html` <mwc-fab
                 icon="add"
@@ -174,6 +182,15 @@ export class ModelPage extends BasePage {
     store.dispatch(
       delModel({ id: this.model, fullfilled: () => Router.go(`/model`) })
     );
+  }
+
+  requestFinialize() {
+    if (!this.model.has_code) {
+      this.info = html`Model code needs to be present to finalize this Model`;
+      this.infoDialog.show();
+    } else {
+      this.finalizeDialog.show();
+    }
   }
 
   finalize() {
