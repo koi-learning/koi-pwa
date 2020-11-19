@@ -57,15 +57,40 @@ export class ModelDetails extends LitElement {
 
       div > div {
         padding: 0px 40px;
-        width: 100%;
         text-align: left;
       }
+
+      .state-icon {
+        width: 100%;
+        text-align: center;
+        color: var(--mdc-theme-text-disabled-on-background);
+        --mdc-icon-size: 24px;
+      }
+
+      .state-icon.active {
+        color: var(--mdc-theme-secondary);
+      }
+    `;
+  }
+
+  renderStates() {
+    return html`
+      <span style="display: flex">
+        <span
+          class="${this.model.finalized ? "state-icon active" : "state-icon"}"
+        >
+          <mwc-icon>check_circle</mwc-icon>
+          Finalized
+        </span>
+      </span>
     `;
   }
 
   renderNaming() {
     if (this.editable && !this.model.finalized) {
-      return html`<mwc-textfield
+      return html`
+        ${this.renderStates()}
+        <mwc-textfield
           label="Name"
           value=${this.model.model_name}
           @change=${(e) => this.updateModel({ model_name: e.path[0].value })}
@@ -77,10 +102,12 @@ export class ModelDetails extends LitElement {
           value=${this.model.model_description}
           @change=${(e) =>
             this.updateModel({ model_description: e.path[0].value })}
-        ></mwc-textarea> `;
+        ></mwc-textarea>
+      `;
     } else {
       return html`<div>
         <h2>${this.model.model_name}</h2>
+        ${this.renderStates()}
         <p>${this.model.model_description}</p>
       </div>`;
     }
@@ -166,10 +193,23 @@ export class ModelDetails extends LitElement {
 @customElement("model-list-item")
 export class ModelListItem extends LitElement {
   @property({ attribute: false }) model: Model;
+
+  static get styles() {
+    return css`
+      .state-icon {
+        color: var(--mdc-theme-text-disabled-on-background);
+        --mdc-icon-size: 24px;
+      }
+
+      .state-icon.active {
+        color: var(--mdc-theme-secondary);
+      }
+    `;
+  }
   render() {
     return html`
       <mwc-list-item
-        ?hasMeta=${this.model.finalized}
+        hasMeta
         twoline
         @request-selected=${() => Router.go(`/model/${this.model.model_uuid}`)}
         style="text-align: left;"
@@ -178,9 +218,12 @@ export class ModelListItem extends LitElement {
         <span slot="secondary"
           >${this.model.model_description.substring(0, 60)}</span
         >
-        <mwc-icon slot="meta" style="color: var(--mdc-theme-secondary);"
-          >check_circle</mwc-icon
-        >
+        <span slot="meta">
+          <mwc-icon
+            class="${this.model.finalized ? "state-icon active" : "state-icon"}"
+            >check_circle</mwc-icon
+          >
+        </span>
       </mwc-list-item>
     `;
   }
