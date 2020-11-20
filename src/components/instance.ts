@@ -38,7 +38,7 @@ import {
   changeInstance,
 } from "@src/store/instance";
 import { InfinityScroll } from "./infinity-scroll";
-import { entityFilter, entityMap, templateJoin } from "@src/util";
+import { entityFilter, entityFind, entityMap, templateJoin } from "@src/util";
 import { AccessCards } from "./accessCards";
 import {
   getAllInstanceAccess,
@@ -127,7 +127,9 @@ export class InstanceListItem extends LitElement {
             `/model/${this.instance.model_uuid}/instance/${this.instance.instance_uuid}`
           )}
         style="text-align: left;"
+        graphic="avatar"
       >
+        <mwc-icon slot="graphic">text_snippet</mwc-icon>
         <span>${this.instance.instance_name}</span>
         <span slot="secondary"
           >${this.instance.instance_description.substring(0, 60)}</span
@@ -211,7 +213,17 @@ export class InstanceList extends connect(store)(LitElement) {
       return html`
         <mwc-list>
           ${templateJoin(
-            entityMap(this.models, this.modelSection),
+            entityMap(
+              entityFilter(
+                this.models,
+                (m) =>
+                  entityFind(
+                    this.instances,
+                    (i) => i.model_uuid == m.model_uuid
+                  ) != null
+              ),
+              this.modelSection
+            ),
             html`<li divider padded role="separator"></li>`
           )}
         </mwc-list>
