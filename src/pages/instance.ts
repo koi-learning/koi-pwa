@@ -99,19 +99,13 @@ export class InstancePage extends BasePage {
   }
 
   actions(): TemplateResult {
-    return html` ${this.instance && this.instance.has_inference
-        ? html`<mwc-icon slot="actionItems">label_important</mwc-icon>`
-        : null}
-      ${this.instance && this.instance.has_training
-        ? html`<mwc-icon slot="actionItems">model_training</mwc-icon>`
-        : null}
-      <mwc-icon-button
-        style="--mdc-theme-text-disabled-on-light: var(--mdc-theme-secondary);"
-        icon="check_circle"
-        slot="actionItems"
-        ?disabled=${this.instance && this.instance.finalized}
-        @click=${() => this.finalizeDialog.show()}
-      ></mwc-icon-button>
+    return html` ${this.instance && !this.instance.finalized
+        ? html`<mwc-icon-button
+            icon="check_circle"
+            slot="actionItems"
+            @click=${() => this.finalizeDialog.show()}
+          ></mwc-icon-button>`
+        : ""}
       <mwc-icon-button
         icon="delete"
         slot="actionItems"
