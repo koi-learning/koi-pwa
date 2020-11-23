@@ -106,13 +106,13 @@ export class ModelPage extends BasePage {
 
   actions(): TemplateResult {
     if (this.right.edit) {
-      return html`<mwc-icon-button
-          style="--mdc-theme-text-disabled-on-light: var(--mdc-theme-secondary);"
-          icon="check_circle"
-          slot="actionItems"
-          ?disabled=${this.model && this.model.finalized}
-          @click=${() => this.requestFinialize()}
-        ></mwc-icon-button>
+      return html` ${this.model && !this.model.finalized
+          ? html`<mwc-icon-button
+              icon="check_circle"
+              slot="actionItems"
+              @click=${() => this.finalizeDialog.show()}
+            ></mwc-icon-button>`
+          : ""}
         <mwc-icon-button
           icon="delete"
           slot="actionItems"

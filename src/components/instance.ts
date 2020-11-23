@@ -38,7 +38,7 @@ import {
   changeInstance,
 } from "@src/store/instance";
 import { InfinityScroll } from "./infinity-scroll";
-import { entityFilter, entityMap, templateJoin } from "@src/util";
+import { entityFilter, entityFind, entityMap, templateJoin } from "@src/util";
 import { AccessCards } from "./accessCards";
 import {
   getAllInstanceAccess,
@@ -69,15 +69,58 @@ export class InstanceDetails extends LitElement {
 
       div > div {
         padding: 0px 40px;
-        width: 100%;
         text-align: left;
       }
+
+      .state-icon {
+        width: 100%;
+        text-align: center;
+        color: var(--mdc-theme-text-disabled-on-background);
+        --mdc-icon-size: 24px;
+      }
+
+      .state-icon.active {
+        color: var(--mdc-theme-secondary);
+      }
+    `;
+  }
+
+  renderStates() {
+    return html`
+      <span style="display: flex">
+        <span
+          class="${this.instance.has_inference
+            ? "state-icon active"
+            : "state-icon"}"
+        >
+          <mwc-icon>label_important</mwc-icon>
+          Inference Data
+        </span>
+        <span
+          class="${this.instance.has_training
+            ? "state-icon active"
+            : "state-icon"}"
+        >
+          <mwc-icon>model_training</mwc-icon>
+          Training Data
+        </span>
+        <span
+          class="${this.instance.finalized
+            ? "state-icon active"
+            : "state-icon"}"
+        >
+          <mwc-icon>check_circle</mwc-icon>
+          Finalized
+        </span>
+      </span>
     `;
   }
 
   renderNaming() {
     if (this.editable && !this.instance.finalized) {
-      return html`<mwc-textfield
+      return html`
+        ${this.renderStates()}
+        <mwc-textfield
           label="Name"
           value=${this.instance.instance_name}
           @change=${(e) =>
@@ -90,10 +133,12 @@ export class InstanceDetails extends LitElement {
           value=${this.instance.instance_description}
           @change=${(e) =>
             this.updateInstance({ instance_description: e.path[0].value })}
-        ></mwc-textarea> `;
+        ></mwc-textarea>
+      `;
     } else {
       return html`<div>
         <h2>${this.instance.instance_name}</h2>
+        ${this.renderStates()}
         <p>${this.instance.instance_description}</p>
       </div>`;
     }
@@ -117,6 +162,19 @@ export class InstanceListItem extends LitElement {
   @query("mwc-list-item")
   listItem: ListItem;
 
+  static get styles() {
+    return css`
+      .state-icon {
+        color: var(--mdc-theme-text-disabled-on-background);
+        --mdc-icon-size: 24px;
+      }
+
+      .state-icon.active {
+        color: var(--mdc-theme-secondary);
+      }
+    `;
+  }
+
   render() {
     return html`
       <mwc-list-item
@@ -127,23 +185,32 @@ export class InstanceListItem extends LitElement {
             `/model/${this.instance.model_uuid}/instance/${this.instance.instance_uuid}`
           )}
         style="text-align: left;"
+        graphic="avatar"
       >
+        <mwc-icon slot="graphic">text_snippet</mwc-icon>
         <span>${this.instance.instance_name}</span>
         <span slot="secondary"
           >${this.instance.instance_description.substring(0, 60)}</span
         >
         <span slot="meta">
-          ${this.instance.has_inference
-            ? html`<mwc-icon>label_important</mwc-icon>`
-            : null}
-          ${this.instance.has_training
-            ? html`<mwc-icon>model_training</mwc-icon>`
-            : null}
-          ${this.instance.finalized
-            ? html`<mwc-icon style="color: var(--mdc-theme-secondary);"
-                >check_circle</mwc-icon
-              >`
-            : null}
+          <mwc-icon
+            class="${this.instance.has_inference
+              ? "state-icon active"
+              : "state-icon"}"
+            >label_important</mwc-icon
+          >
+          <mwc-icon
+            class="${this.instance.has_training
+              ? "state-icon active"
+              : "state-icon"}"
+            >model_training</mwc-icon
+          >
+          <mwc-icon
+            class="${this.instance.finalized
+              ? "state-icon active"
+              : "state-icon"}"
+            >check_circle</mwc-icon
+          >
         </span>
       </mwc-list-item>
     `;
@@ -211,7 +278,17 @@ export class InstanceList extends connect(store)(LitElement) {
       return html`
         <mwc-list>
           ${templateJoin(
-            entityMap(this.models, this.modelSection),
+            entityMap(
+              entityFilter(
+                this.models,
+                (m) =>
+                  entityFind(
+                    this.instances,
+                    (i) => i.model_uuid == m.model_uuid
+                  ) != null
+              ),
+              this.modelSection
+            ),
             html`<li divider padded role="separator"></li>`
           )}
         </mwc-list>
