@@ -144,9 +144,16 @@ export class InstanceDetails extends LitElement {
     }
   }
 
+  renderParameters() {
+    return html`<h3>Parameters</h3>
+      <parameter-list .instance=${this.instance}></parameter-list>`;
+  }
+
   render() {
     if (this.instance) {
-      return html` <div>${this.renderNaming()}</div> `;
+      return html`
+        <div>${this.renderNaming()}${this.renderParameters()}</div>
+      `;
     }
   }
 

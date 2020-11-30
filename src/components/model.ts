@@ -174,12 +174,17 @@ export class ModelDetails extends LitElement {
     }
   }
 
+  renderParameters() {
+    return html`<h3>Parameters</h3>
+      <parameter-list .model=${this.model} editable="False"></parameter-list>`;
+  }
+
   render() {
     if (this.model) {
       return html`
         <div>
           ${this.renderNaming()} ${this.renderUpload()} ${this.renderVisual()}
-          ${this.renderLabel()}
+          ${this.renderLabel()} ${this.renderParameters()}
         </div>
       `;
     }

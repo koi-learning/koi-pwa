@@ -26,14 +26,18 @@ import { modelAccessReducer } from "./modelAccess";
 import { instanceAccessReducer } from "./instanceAccess";
 import { generalAccessReducer } from "./generalAccess";
 import { labelRequestReducer } from "./labelRequest";
+import { modelParamReducer } from "./modelParam";
+import { instanceParamReducer } from "./instanceParam";
 
 const rootReducer = combineReducers({
   models: modelReducer,
   modelRoles: modelRoleReducer,
   modelAccess: modelAccessReducer,
+  modelParam: modelParamReducer,
   instances: instanceReducer,
   instanceRoles: instanceRoleReducer,
   instanceAccess: instanceAccessReducer,
+  instanceParam: instanceParamReducer,
   samples: sampleReducer,
   featureRequests: labelRequestReducer,
   users: userReducer,
