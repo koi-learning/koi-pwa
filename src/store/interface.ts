@@ -37,8 +37,16 @@ export interface ModelId {
   model_uuid: string;
 }
 
+export interface ModelParamId extends ModelId {
+  param_uuid: string;
+}
+
 export interface InstanceId extends ModelId {
   instance_uuid: string;
+}
+
+export interface InstanceParamId extends InstanceId {
+  value_uuid: string;
 }
 
 export interface SampleId extends InstanceId {
@@ -97,6 +105,17 @@ export interface ModelData {
   finalized: boolean;
 }
 
+export interface ModelParamData {
+  constaint: string;
+  description: string;
+  name: boolean;
+  type: boolean;
+}
+
+export interface InstanceParamData {
+  value: number | string | null;
+}
+
 export interface InstanceData {
   instance_name: string;
   instance_description: string;
@@ -117,6 +136,11 @@ export interface LabelRequestData extends SampleId {
 
 export type User = UserId & UserData & CRUDExtension;
 export type Model = ModelId & ModelData & CRUDExtension;
+export type ModelParam = ModelParamId & ModelParamData & CRUDExtension;
+export type InstanceParam = InstanceParamId &
+  ModelParamData &
+  InstanceParamData &
+  CRUDExtension;
 export type Instance = InstanceId & InstanceData & CRUDExtension;
 export type GeneralAccess = GeneralAccessId & AccessData & CRUDExtension;
 export type ModelAccess = ModelAccessId & AccessData & CRUDExtension;

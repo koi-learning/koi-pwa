@@ -54,3 +54,4 @@ import "@components/plugin";
 import "@components/access";
 import "@components/role";
 import "@components/request";
+import "@components/parameter";

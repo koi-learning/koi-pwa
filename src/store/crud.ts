@@ -95,6 +95,31 @@ export function CRUD<
     }
   );
 
+  const getUnPaged = createAsyncThunk(
+    `${name}/getUnPage`,
+    async (
+      arg: {
+        id?: SuperIdType;
+        fullfilled?: (elements: number) => void;
+        rejected?: () => void;
+        queryParameter?: { [id: string]: string };
+      },
+      thunkAPI
+    ) => {
+      let queryString = "";
+      if (arg.queryParameter)
+        queryString =
+          "?" +
+          Object.keys(arg.queryParameter).map(
+            (key) => `&${key}=${arg.queryParameter[key]}`
+          );
+      return (await authenticatedJsonGET(
+        thunkAPI.dispatch,
+        basePath(arg.id) + queryString
+      )) as Array<ObjectType>;
+    }
+  );
+
   const getAll = createAsyncThunk(
     `${name}/getAll`,
     async (
@@ -230,6 +255,28 @@ export function CRUD<
         if (action.meta.arg.rejected) action.meta.arg.rejected();
       });
 
+      // getUnPage
+      builder.addCase(getUnPaged.pending, (state: any) => {
+        state.loading = true;
+      });
+      builder.addCase(getUnPaged.fulfilled, (state: any, action) => {
+        adapter.addMany(
+          state,
+          action.payload.map((o) => ({
+            ...action.meta.arg.id,
+            ...o,
+            loading: false,
+          }))
+        );
+        state.loading = false;
+        if (action.meta.arg.fullfilled)
+          action.meta.arg.fullfilled(action.payload.length);
+      });
+      builder.addCase(getUnPaged.rejected, (state: any, action) => {
+        state.loading = false;
+        if (action.meta.arg.rejected) action.meta.arg.rejected();
+      });
+
       // getAll
       builder.addCase(getAll.fulfilled, (_, action) => {
         if (action.meta.arg.fullfilled) action.meta.arg.fullfilled();
@@ -306,6 +353,7 @@ export function CRUD<
   return {
     get: get,
     getPage: getPage,
+    getUnPaged: getUnPaged,
     getAll: getAll,
     add: add,
     change: change,
