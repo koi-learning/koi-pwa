@@ -93,7 +93,8 @@ export const apiSlice = createSlice({
       localStorage.removeItem("user");
       localStorage.removeItem("token");
       state.isLoggedIn = false;
-      return { ...state, isLoggingIn: false, user_id: undefined };
+      state.isLoggingIn = false;
+      state.user_id = undefined;
     },
   },
   extraReducers: (builder) => {
