@@ -86,16 +86,17 @@ if (
 }
 
 export const apiSlice = createSlice({
-  name: "api",
-  initialState: initialState,
-  reducers: {
-    invalidateLoginInternal(state) {
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-      state.isLoggedIn = false;
-      return { ...state, isLoggingIn: false, user_id: undefined };
+    name: "api",
+    initialState: initialState,
+    reducers: {
+      invalidateLoginInternal(state) {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        state.isLoggedIn = false;
+        state.isLoggingIn = false;
+        state.user_id = undefined;
+      },
     },
-  },
   extraReducers: (builder) => {
     builder.addCase(loginInternal.pending, (state) => {
       state.isLoggingIn = true;
