@@ -85,9 +85,9 @@ export function CRUD<
         arg.page * page_limit
       }`;
       if (arg.queryParameter)
-        queryString += Object.keys(arg.queryParameter).map(
-          (key) => `&${key}=${arg.queryParameter[key]}`
-        );
+        queryString += Object.keys(arg.queryParameter)
+          .map((key) => `&${key}=${arg.queryParameter[key]}`)
+          .join("");
       return (await authenticatedJsonGET(
         thunkAPI.dispatch,
         basePath(arg.id) + queryString

@@ -21,7 +21,7 @@ import {
   query,
   css,
 } from "lit-element";
-import { Instance, Sample } from "@src/store/interface";
+import { Instance, Sample, Tag } from "@src/store/interface";
 import {
   SampleEntityState,
   delSample,
@@ -39,6 +39,9 @@ export class Samples extends connect(store)(LitElement) {
   @property({ attribute: false }) instance: Instance;
 
   @property() code: string;
+  @property() tags: Tag[];
+  @property() include: string[] = [];
+  @property() exclude: string[] = [];
   @property() samples: SampleEntityState;
   private _data: { [key: string]: Promise<unknown> | unknown } = {};
   private _descriptor: { [key: string]: Promise<unknown> | unknown } = {};
@@ -51,6 +54,14 @@ export class Samples extends connect(store)(LitElement) {
   update(changedProperties) {
     super.update(changedProperties);
     if (changedProperties.has("instance")) {
+      authenticatedJsonGET(
+        store.dispatch,
+        `model/${this.instance.model_uuid}/instance/${this.instance.instance_uuid}/tags`
+      ).then(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        (tags) => (this.tags = [{ name: "tag1" }, { name: "tag2" }]) /*tags*/
+      );
+
       authenticatedFetch(
         store.dispatch,
         `model/${this.instance.model_uuid}/visualplugin`,
@@ -139,8 +150,53 @@ export class Samples extends connect(store)(LitElement) {
     return this._descriptor[sample.instance_uuid];
   }
 
+  includeTagToggle = (tag) => {
+    if (this.include.includes(tag)) {
+      this.include = this.include.filter((t) => t != tag);
+    } else {
+      this.include = [...this.include, tag];
+    }
+  };
+
+  excludeTagToggle = (tag) => {
+    if (this.exclude.includes(tag)) {
+      this.exclude = this.exclude.filter((t) => t != tag);
+    } else {
+      this.exclude = [...this.exclude, tag];
+    }
+  };
+
+  renderTags(active, toggle) {
+    const passive = new Set();
+    if (this.tags) {
+      for (const tag of this.tags) {
+        passive.add(tag.name);
+      }
+    }
+    for (const tag of active) {
+      passive.delete(tag);
+    }
+    return [...active]
+      .map(
+        (tag) =>
+          html`<span class="chip active" @click=${() => toggle(tag)}>
+            ${tag}
+          </span>`
+      )
+      .concat(
+        [...passive].map(
+          (tag) =>
+            html`<span class="chip" @click=${() => toggle(tag)}> ${tag} </span>`
+        )
+      );
+  }
+
   render() {
     return html`
+      <paper-card style="width: 100%">
+        including: ${this.renderTags(this.include, this.includeTagToggle)}<br />
+        excluding: ${this.renderTags(this.exclude, this.excludeTagToggle)}
+      </paper-card>
       ${entityMap(
         entityFilter(
           this.samples,
@@ -167,8 +223,26 @@ export class Samples extends connect(store)(LitElement) {
       <paper-spinner ?active=${this.samples.loading}></paper-spinner>
       <infinity-scroll
         .scrollTarget=${this.scrollTarget}
+        .updateOn=${this.include.concat(this.exclude)}
         @loadPage=${(e) => {
-          store.dispatch(getSamplePage({ id: this.instance, ...e.detail }));
+          store.dispatch(
+            this.include.length > 0
+              ? getSamplePage({
+                  id: this.instance,
+                  ...e.detail,
+                  queryParameter: {
+                    filter_include: this.include.join(","),
+                    filter_exclude: this.exclude.join(","),
+                  },
+                })
+              : getSamplePage({
+                  id: this.instance,
+                  ...e.detail,
+                  queryParameter: {
+                    filter_exclude: this.exclude.join(","),
+                  },
+                })
+          );
         }}
       ></infinity-scroll>
     `;
@@ -178,6 +252,22 @@ export class Samples extends connect(store)(LitElement) {
     return css`
       paper-card {
         margin: 10px;
+      }
+
+      .chip {
+        display: inline-block;
+        padding: 0 10px;
+        margin: 5px;
+        height: 20px;
+        font-size: 16px;
+        line-height: 20px;
+        border-radius: 25px;
+        background-color: #f1f1f1;
+        cursor: pointer;
+      }
+
+      .active {
+        background-color: var(--mdc-theme-secondary);
       }
     `;
   }
