@@ -57,10 +57,7 @@ export class Samples extends connect(store)(LitElement) {
       authenticatedJsonGET(
         store.dispatch,
         `model/${this.instance.model_uuid}/instance/${this.instance.instance_uuid}/tags`
-      ).then(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        (tags) => (this.tags = [{ name: "tag1" }, { name: "tag2" }]) /*tags*/
-      );
+      ).then((tags) => tags);
 
       authenticatedFetch(
         store.dispatch,
