@@ -231,15 +231,15 @@ export class Samples extends connect(store)(LitElement) {
                   id: this.instance,
                   ...e.detail,
                   queryParameter: {
-                    filter_include: this.include.join(","),
-                    filter_exclude: this.exclude.join(","),
+                    inc_tags: this.include.join(","),
+                    exc_tags: this.exclude.join(","),
                   },
                 })
               : getSamplePage({
                   id: this.instance,
                   ...e.detail,
                   queryParameter: {
-                    filter_exclude: this.exclude.join(","),
+                    exc_tags: this.exclude.join(","),
                   },
                 })
           );
