@@ -129,6 +129,10 @@ export interface SampleData {
   consumed: boolean;
 }
 
+export interface Tag {
+  name: string;
+}
+
 export interface LabelRequestData extends SampleId {
   sample_uuid: string;
   obsolete: boolean;

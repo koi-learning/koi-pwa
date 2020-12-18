@@ -26,6 +26,7 @@ export class InfinityScroll extends LitElement {
 
   @property() timeout = 1000;
   @property({ type: Number }) subPages = 0;
+  @property() updateOn;
 
   @property()
   get scrollTarget() {
@@ -51,6 +52,7 @@ export class InfinityScroll extends LitElement {
     this._count = new Array(this.subPages + 1);
     this._count.fill(0);
     this._currentSubpage = this.subPages;
+    this._isLocked = false;
   }
 
   protected loadPage() {
