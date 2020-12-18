@@ -212,7 +212,11 @@ export function CRUD<
   const slice = createSlice({
     name: name,
     initialState: initialState,
-    reducers: {},
+    reducers: {
+      reset() {
+        return initialState;
+      },
+    },
     extraReducers: (builder) => {
       // get
       builder.addCase(get.pending, (state: any, action) => {
@@ -359,5 +363,6 @@ export function CRUD<
     change: change,
     del: del,
     slice: slice,
+    reset: slice.actions.reset,
   };
 }

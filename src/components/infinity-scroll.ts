@@ -78,10 +78,10 @@ export class InfinityScroll extends LitElement {
 
   protected rejected = () => {
     this._isLocked = true;
-    /*setTimeout(() => {
-            this._isLocked = false;
-            this.loadNextPageIfNecessary();
-        }, this.timeout);*/
+    setTimeout(() => {
+      this._isLocked = false;
+      this.loadNextPageIfNecessary();
+    }, this.timeout);
   };
 
   protected fullfilled = (elements: number) => {
@@ -99,11 +99,12 @@ export class InfinityScroll extends LitElement {
         this._page[this._currentSubpage] = 0;
         this.loadNextPageIfNecessary();
       } else {
+        this.reset();
         this._isLocked = true;
-        /*setTimeout(() => {
-                    this._isLocked = false;
-                    this.loadNextPageIfNecessary();
-                }, this.timeout);*/
+        setTimeout(() => {
+          this._isLocked = false;
+          this.loadNextPageIfNecessary();
+        }, this.timeout);
       }
     }
   };
