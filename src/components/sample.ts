@@ -26,6 +26,7 @@ import {
   SampleEntityState,
   delSample,
   getSamplePage,
+  resetSample,
 } from "@src/store/samples";
 import { InfinityScroll } from "./infinity-scroll";
 import { RootState, store } from "@src/store/store";
@@ -57,7 +58,7 @@ export class Samples extends connect(store)(LitElement) {
       authenticatedJsonGET(
         store.dispatch,
         `model/${this.instance.model_uuid}/instance/${this.instance.instance_uuid}/tags`
-      ).then((tags) => tags);
+      ).then((tags) => (this.tags = tags));
 
       authenticatedFetch(
         store.dispatch,
@@ -153,6 +154,7 @@ export class Samples extends connect(store)(LitElement) {
     } else {
       this.include = [...this.include, tag];
     }
+    store.dispatch(resetSample());
   };
 
   excludeTagToggle = (tag) => {
@@ -161,6 +163,7 @@ export class Samples extends connect(store)(LitElement) {
     } else {
       this.exclude = [...this.exclude, tag];
     }
+    store.dispatch(resetSample());
   };
 
   renderTags(active, toggle) {
@@ -220,7 +223,6 @@ export class Samples extends connect(store)(LitElement) {
       <paper-spinner ?active=${this.samples.loading}></paper-spinner>
       <infinity-scroll
         .scrollTarget=${this.scrollTarget}
-        .updateOn=${this.include.concat(this.exclude)}
         @loadPage=${(e) => {
           store.dispatch(
             this.include.length > 0
