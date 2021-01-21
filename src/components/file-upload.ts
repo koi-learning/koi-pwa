@@ -120,6 +120,7 @@ export class FileUpload extends LitElement {
     })
       .then(() => {
         this.isUploading = false;
+        this.dispatchEvent(new CustomEvent("uploaded"));
       })
       .catch(() => {
         this.isUploading = false;

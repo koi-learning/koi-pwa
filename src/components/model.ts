@@ -23,7 +23,12 @@ import {
 } from "lit-element";
 import { Model, User, ModelRole, ModelAccess } from "@src/store/interface";
 import { store, RootState } from "@src/store/store";
-import { changeModel, ModelEntityState, getModelPage } from "@src/store/model";
+import {
+  changeModel,
+  ModelEntityState,
+  getModelPage,
+  getModel,
+} from "@src/store/model";
 import { connect } from "pwa-helpers";
 import { InfinityScroll } from "./infinity-scroll";
 import { entityMap, entityFilter } from "@src/util";
@@ -118,9 +123,10 @@ export class ModelDetails extends LitElement {
       return html`<koi-file-upload
         label="Code"
         showUpload
-        ?showDownload=${this.model.has_code || this.download}
+        ?showDownload=${this.model.has_code && this.download}
         location=${`model/${this.model.model_uuid}/code`}
         filename=${`koi_model_code_${this.model.model_uuid}.zip`}
+        @uploaded=${() => store.dispatch(getModel({ id: this.model }))}
       ></koi-file-upload>`;
     } else if (this.model.has_code || this.download) {
       return html`<koi-file-upload
@@ -137,12 +143,13 @@ export class ModelDetails extends LitElement {
       return html`<koi-file-upload
         label="Visual Plugin"
         showUpload
-        ?showDownload=${this.model.has_visual_plugin || this.download}
+        ?showDownload=${this.model.has_visual_plugin && this.download}
         location=${`model/${this.model.model_uuid}/visualplugin`}
         filename=${`koi_model_visual_${this.model.model_uuid}.js`}
+        @uploaded=${() => store.dispatch(getModel({ id: this.model }))}
       >
       </koi-file-upload>`;
-    } else if (this.model.has_visual_plugin || this.download) {
+    } else if (this.model.has_visual_plugin && this.download) {
       return html`<koi-file-upload
         label="Visual Plugin"
         showDownload
@@ -158,9 +165,10 @@ export class ModelDetails extends LitElement {
       return html`<koi-file-upload
         label="Request Plugin"
         showUpload
-        ?showDownload=${this.model.has_label_plugin || this.download}
+        ?showDownload=${this.model.has_label_plugin && this.download}
         location=${`model/${this.model.model_uuid}/requestplugin`}
         filename=${`koi_model_request_${this.model.model_uuid}.js`}
+        @uploaded=${() => store.dispatch(getModel({ id: this.model }))}
       >
       </koi-file-upload>`;
     } else if (this.model.has_label_plugin || this.download) {
