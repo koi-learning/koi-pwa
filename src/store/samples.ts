@@ -29,3 +29,4 @@ export type SampleEntityState = CRUDEntityState<Sample>;
 export const getSample = crud.get;
 export const getSamplePage = crud.getPage;
 export const delSample = crud.del;
+export const resetSample = crud.reset;
