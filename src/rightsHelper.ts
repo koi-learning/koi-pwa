@@ -85,6 +85,7 @@ export function hasInstanceRight(
   state: RootState
 ) {
   if (!state.api.isLoggedIn) return false;
+  if (!instance) return false;
   const access = entityFilter(
     state.instanceAccess,
     (a) =>
