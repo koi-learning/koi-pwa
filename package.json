@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@material/mwc-button": "^0.19.1",
+    "@material/mwc-checkbox": "^0.19.1",
     "@material/mwc-dialog": "^0.19.1",
     "@material/mwc-drawer": "^0.19.1",
     "@material/mwc-fab": "^0.19.1",
