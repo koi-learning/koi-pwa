@@ -13,15 +13,26 @@
 // GNU Lesser General Public License is distributed along with this
 // software and can be found at http://www.gnu.org/licenses/lgpl.html
 
-import { html, customElement, property, css } from "lit-element";
+import { html, customElement, property, css, query } from "lit-element";
 import { store, RootState } from "@src/store/store";
 import { BasePage } from "./base";
-import { addModel, ModelEntityState } from "@src/store/model";
+import { addModel, delModel, ModelEntityState } from "@src/store/model";
+import { ConfirmDialog } from "@src/components/dialogs";
+import { ModelList } from "@src/components/model";
 
 @customElement("koi-models")
 export class ModelsPage extends BasePage {
   isSubPage = false;
   @property() models: ModelEntityState;
+
+  @property()
+  private selectionMode = false;
+
+  @query("#deleteDialog")
+  deleteDialog: ConfirmDialog;
+
+  @query("model-list")
+  list: ModelList;
 
   stateChanged(state: RootState) {
     this.models = state.models;
@@ -32,20 +43,38 @@ export class ModelsPage extends BasePage {
   }
 
   actions() {
-    return html``;
+    return this.selectionMode
+      ? html` <mwc-icon-button
+          icon="delete_sweep"
+          slot="actionItems"
+          @click=${() => this.deleteDialog.show()}
+        ></mwc-icon-button>`
+      : html``;
   }
 
   content() {
-    return html`
-      <paper-card>
-        <model-list .scrollTarget=${this.scrollTarget}></model-list>
+    return html` <paper-card>
+        <model-list
+          .scrollTarget=${this.scrollTarget}
+          @selectionMode=${(event) => {
+            this.selectionMode = event.detail.selectionModeActive;
+          }}
+        ></model-list>
       </paper-card>
       <mwc-fab
         icon="add"
         @click=${() => store.dispatch(addModel({}))}
       ></mwc-fab>
       <wait-dialog ?open=${this.models.adding}>Adding Model</wait-dialog>
-    `;
+      <confirm-dialog id="deleteDialog" @confirm=${this.delete}>
+        Are you sure you want to delete the selected models?
+      </confirm-dialog>`;
+  }
+
+  delete() {
+    for (const listItem of this.list.selection) {
+      store.dispatch(delModel({ id: listItem.model }));
+    }
   }
 
   static get styles() {

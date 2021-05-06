@@ -13,8 +13,9 @@ import { RootState, store } from "@src/store/store";
 import { modelKey, delModel, getModel, changeModel } from "@src/store/model";
 import { router } from "..";
 import { ConfirmDialog, InfoDialog } from "@src/components/dialogs";
-import { addInstance } from "@src/store/instance";
+import { addInstance, delInstance } from "@src/store/instance";
 import { hasModelRight, loadModelRights } from "@src/rightsHelper";
+import { InstanceList } from "@src/components/instance";
 
 @customElement("koi-model")
 export class ModelPage extends BasePage {
@@ -40,10 +41,18 @@ export class ModelPage extends BasePage {
 
   @query("#deleteDialog")
   deleteDialog: ConfirmDialog;
+  @query("#deleteInstancesDialog")
+  deleteInstancesDialog: ConfirmDialog;
   @query("#finalizeDialog")
   finalizeDialog: ConfirmDialog;
   @query("#infoDialog")
   infoDialog: InfoDialog;
+
+  @property()
+  private selectionMode = false;
+
+  @query("instance-list")
+  list: InstanceList;
 
   static get styles() {
     return super.styles.concat(
@@ -105,7 +114,13 @@ export class ModelPage extends BasePage {
   }
 
   actions(): TemplateResult {
-    if (this.right.edit) {
+    if (this.selectionMode) {
+      return html`<mwc-icon-button
+        icon="delete_sweep"
+        slot="actionItems"
+        @click=${() => this.deleteInstancesDialog.show()}
+      ></mwc-icon-button>`;
+    } else if (this.right.edit) {
       return html` ${this.model && !this.model.finalized
           ? html`<mwc-icon-button
               icon="check_circle"
@@ -134,6 +149,13 @@ export class ModelPage extends BasePage {
 
       <confirm-dialog id="deleteDialog" @confirm=${this.delete}>
         Are you sure you want to delete this model?
+      </confirm-dialog>
+
+      <confirm-dialog
+        id="deleteInstancesDialog"
+        @confirm=${this.deleteInstances}
+      >
+        Are you sure you want to delete the selected instances?
       </confirm-dialog>
 
       <confirm-dialog id="finalizeDialog" @confirm=${this.finalize}>
@@ -167,6 +189,9 @@ export class ModelPage extends BasePage {
             <instance-list
               .model=${this.model}
               .scrollTarget=${this.scrollTarget}
+              @selectionMode=${(event) => {
+                this.selectionMode = event.detail.selectionModeActive;
+              }}
             ></instance-list>
           </paper-card>
           ${this.right.instantiate
@@ -182,6 +207,12 @@ export class ModelPage extends BasePage {
     store.dispatch(
       delModel({ id: this.model, fullfilled: () => Router.go(`/model`) })
     );
+  }
+
+  deleteInstances() {
+    for (const listItem of this.list.selection) {
+      store.dispatch(delInstance({ id: listItem.instance }));
+    }
   }
 
   requestFinialize() {

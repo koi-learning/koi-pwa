@@ -7,58 +7,59 @@ import { BasePage } from "./base";
 
 @customElement("koi-instances")
 export class KoiInstances extends BasePage {
-    isSubPage = false;
+  isSubPage = false;
 
-    @property()
-    private selectionMode: boolean = false;
+  @property()
+  private selectionMode = false;
 
-    @query("#deleteDialog")
-    deleteDialog: ConfirmDialog;
+  @query("#deleteDialog")
+  deleteDialog: ConfirmDialog;
 
-    @query("instance-list")
-    list: InstanceList;
+  @query("instance-list")
+  list: InstanceList;
 
-    head() {
-        return html`Instances`;
+  head() {
+    return html`Instances`;
+  }
+
+  actions() {
+    return this.selectionMode
+      ? html` <mwc-icon-button
+          icon="delete_sweep"
+          slot="actionItems"
+          @click=${() => this.deleteDialog.show()}
+        ></mwc-icon-button>`
+      : html``;
+  }
+
+  content() {
+    return html` <paper-card>
+        <instance-list
+          .scrollTarget=${this.scrollTarget}
+          @selectionMode=${(event) => {
+            this.selectionMode = event.detail.selectionModeActive;
+          }}
+        ></instance-list>
+      </paper-card>
+      <confirm-dialog id="deleteDialog" @confirm=${this.delete}>
+        Are you sure you want to delete the selected instances?
+      </confirm-dialog>`;
+  }
+
+  delete() {
+    for (const listItem of this.list.selection) {
+      store.dispatch(delInstance({ id: listItem.instance }));
     }
+  }
 
-    actions() {
-        return this.selectionMode ? html`
-          <mwc-icon-button
-            icon="delete"
-            slot="actionItems"
-            @click=${() => this.deleteDialog.show()}
-          ></mwc-icon-button>`: html``;
-    }
-
-    content() {
-        return html` <paper-card>
-      <instance-list
-        .scrollTarget=${this.scrollTarget}
-        @selectionMode=${(event) => {
-                this.selectionMode = event.detail.selectionModeActive;
-            }}
-      ></instance-list>
-    </paper-card>
-    <confirm-dialog id="deleteDialog" @confirm=${this.delete}>
-    Are you sure you want to delete the selected instances?
-  </confirm-dialog>`;
-    }
-
-    delete() {
-        for (const listItem of this.list.selection) {
-            store.dispatch(delInstance({ id: listItem.instance }));
-        }
-    }
-
-    static get styles() {
-        return super.styles.concat(
-            css`
+  static get styles() {
+    return super.styles.concat(
+      css`
         paper-card {
           max-width: var(--std-width);
           width: 100%;
         }
       `
-        );
-    }
+    );
+  }
 }

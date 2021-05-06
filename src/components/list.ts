@@ -1,3 +1,18 @@
+// Copyright (c) individual contributors.
+// All rights reserved.
+//
+// This is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation; either version 3 of
+// the License, or any later version.
+//
+// This software is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details. A copy of the
+// GNU Lesser General Public License is distributed along with this
+// software and can be found at http://www.gnu.org/licenses/lgpl.html
+
 import {
   LitElement,
   property,
@@ -71,7 +86,8 @@ export class ListItemBase extends CheckListItem {
   }
 
   render() {
-    const showCheckbox = this.hovered || this.selectionMode;
+    const showCheckbox =
+      this.hovered || this.selectionMode || this.graphic === "control";
     const text = this.renderText();
     const graphic =
       this.graphic && this.graphic !== "control" && !(this.left && showCheckbox)
@@ -125,10 +141,10 @@ export class ListItemBase extends CheckListItem {
   }
 
   contextMenu(event: Event) {
-      super.onClick()
-      event.preventDefault()
-      event.stopPropagation()
-    }
+    super.onClick();
+    event.preventDefault();
+    event.stopPropagation();
+  }
 
   connectedCallback() {
     super.connectedCallback();
@@ -136,7 +152,7 @@ export class ListItemBase extends CheckListItem {
     //this.addEventListener("focus", this.startHover)
     this.addEventListener("mouseleave", this.endHover);
     //this.addEventListener("blur", this.endHover)
-    this.addEventListener("contextmenu", this.contextMenu)
+    this.addEventListener("contextmenu", this.contextMenu);
   }
 
   disconnectedCallback() {
@@ -199,6 +215,7 @@ export class ListBase extends LitElement {
   }
 
   updated(changedProperties) {
+    super.updated(changedProperties);
     this.setSelectionModeOnChilds();
   }
 

@@ -40,6 +40,8 @@ import {
 } from "@src/store/modelAccess";
 import { AccessCards } from "./accessCards";
 import { Router } from "@vaadin/router";
+import { ListBase, ListItemBase } from "./list";
+import { GraphicType } from "@material/mwc-list/mwc-list-item-base";
 
 @customElement("model-details")
 export class ModelDetails extends LitElement {
@@ -204,46 +206,45 @@ export class ModelDetails extends LitElement {
 }
 
 @customElement("model-list-item")
-export class ModelListItem extends LitElement {
+export class ModelListItem extends ListItemBase {
   @property({ attribute: false }) model: Model;
+  graphic: GraphicType = "control";
 
-  static get styles() {
-    return css`
-      .state-icon {
-        color: var(--mdc-theme-text-disabled-on-background);
-        --mdc-icon-size: 24px;
-      }
+  action() {
+    Router.go(`/model/${this.model.model_uuid}`);
+  }
 
-      .state-icon.active {
-        color: var(--mdc-theme-secondary);
-      }
+  update(changedProperties) {
+    super.update(changedProperties);
+    if (changedProperties.has("model")) {
+      this.selected = false;
+    }
+  }
+
+  protected primaryText() {
+    return html`${this.model.model_name}`;
+  }
+
+  protected secondaryText() {
+    return html`${this.model.model_description.substring(0, 60)}`;
+  }
+
+  protected meta() {
+    return html`
+      <mwc-icon
+        class="${this.model.finalized ? "state-icon active" : "state-icon"}"
+        >check_circle</mwc-icon
+      >
     `;
   }
-  render() {
-    return html`
-      <mwc-list-item
-        hasMeta
-        twoline
-        @request-selected=${() => Router.go(`/model/${this.model.model_uuid}`)}
-        style="text-align: left;"
-      >
-        <span>${this.model.model_name}</span>
-        <span slot="secondary"
-          >${this.model.model_description.substring(0, 60)}</span
-        >
-        <span slot="meta">
-          <mwc-icon
-            class="${this.model.finalized ? "state-icon active" : "state-icon"}"
-            >check_circle</mwc-icon
-          >
-        </span>
-      </mwc-list-item>
-    `;
+
+  protected icon() {
+    return html``;
   }
 }
 
 @customElement("model-list")
-export class ModelList extends connect(store)(LitElement) {
+export class ModelList extends connect(store)(ListBase) {
   @property() models: ModelEntityState;
 
   @property({ attribute: false }) scrollTarget;
@@ -251,13 +252,15 @@ export class ModelList extends connect(store)(LitElement) {
   @query("infinity-scroll")
   infinity_scroll: InfinityScroll;
 
+  selection: ModelListItem[];
+
   stateChanged(state: RootState) {
     this.models = state.models;
   }
 
   render() {
     return html`
-      <mwc-list>
+      <mwc-list multi>
         ${entityMap(
           this.models,
           (m) => html`<model-list-item .model=${m}></model-list-item>`
