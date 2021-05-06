@@ -47,7 +47,7 @@ import {
 } from "@src/store/instanceAccess";
 import { getAllInstanceRole } from "@src/store/instanceRole";
 import { Router } from "@vaadin/router";
-import { ListItem } from "@material/mwc-list/mwc-list-item";
+import { ListBase, ListItemBase } from "./list";
 
 @customElement("instance-details")
 export class InstanceDetails extends LitElement {
@@ -163,80 +163,58 @@ export class InstanceDetails extends LitElement {
 }
 
 @customElement("instance-list-item")
-export class InstanceListItem extends LitElement {
+export class InstanceListItem extends ListItemBase {
   @property({ attribute: false }) instance: Instance;
 
-  @query("mwc-list-item")
-  listItem: ListItem;
-
-  static get styles() {
-    return css`
-      .state-icon {
-        color: var(--mdc-theme-text-disabled-on-background);
-        --mdc-icon-size: 24px;
-      }
-
-      .state-icon.active {
-        color: var(--mdc-theme-secondary);
-      }
-    `;
+  action() {
+    Router.go(
+      `/model/${this.instance.model_uuid}/instance/${this.instance.instance_uuid}`
+    );
   }
 
-  render() {
+  update(changedProperties) {
+    super.update(changedProperties);
+    if (changedProperties.has("instance")) {
+      this.selected = false;
+    }
+  }
+
+  protected primaryText() {
+    return html`${this.instance.instance_name}`;
+  }
+
+  protected secondaryText() {
+    return html`${this.instance.instance_description.substring(0, 60)}`;
+  }
+
+  protected meta() {
     return html`
-      <mwc-list-item
-        hasMeta
-        twoline
-        @request-selected=${() =>
-          Router.go(
-            `/model/${this.instance.model_uuid}/instance/${this.instance.instance_uuid}`
-          )}
-        style="text-align: left;"
-        graphic="avatar"
+      <mwc-icon
+        class="${this.instance.has_inference
+          ? "state-icon active"
+          : "state-icon"}"
+        >label_important</mwc-icon
       >
-        <mwc-icon slot="graphic">text_snippet</mwc-icon>
-        <span>${this.instance.instance_name}</span>
-        <span slot="secondary"
-          >${this.instance.instance_description.substring(0, 60)}</span
-        >
-        <span slot="meta">
-          <mwc-icon
-            class="${this.instance.has_inference
-              ? "state-icon active"
-              : "state-icon"}"
-            >label_important</mwc-icon
-          >
-          <mwc-icon
-            class="${this.instance.has_training
-              ? "state-icon active"
-              : "state-icon"}"
-            >model_training</mwc-icon
-          >
-          <mwc-icon
-            class="${this.instance.finalized
-              ? "state-icon active"
-              : "state-icon"}"
-            >check_circle</mwc-icon
-          >
-        </span>
-      </mwc-list-item>
+      <mwc-icon
+        class="${this.instance.has_training
+          ? "state-icon active"
+          : "state-icon"}"
+        >model_training</mwc-icon
+      >
+      <mwc-icon
+        class="${this.instance.finalized ? "state-icon active" : "state-icon"}"
+        >check_circle</mwc-icon
+      >
     `;
   }
 
-  firstUpdated() {
-    const observer = new MutationObserver(() => {
-      const meta = this.listItem.shadowRoot.querySelector(
-        ".mdc-list-item__meta"
-      ) as HTMLSpanElement;
-      meta.style.width = "80px";
-      observer.disconnect();
-    });
-    observer.observe(this.listItem.shadowRoot, { childList: true });
+  protected icon() {
+    return html`<mwc-icon slot="graphic">text_snippet</mwc-icon>`;
   }
 }
 
 @customElement("instance-list")
-export class InstanceList extends connect(store)(LitElement) {
+export class InstanceList extends connect(store)(ListBase) {
   @property() model: Model;
   @property() models: ModelEntityState;
   @property() instances: InstanceEntityState;
@@ -245,6 +223,8 @@ export class InstanceList extends connect(store)(LitElement) {
 
   @query("infinity-scroll")
   infinity_scroll: InfinityScroll;
+
+  selection: InstanceListItem[];
 
   stateChanged(state: RootState) {
     this.models = state.models;
@@ -273,7 +253,7 @@ export class InstanceList extends connect(store)(LitElement) {
   render() {
     if (this.model) {
       return html`
-        <mwc-list> ${this.instancesForModel(this.model)} </mwc-list>
+        <mwc-list multi> ${this.instancesForModel(this.model)} </mwc-list>
         <paper-spinner ?active=${this.models.loading}></paper-spinner>
         <infinity-scroll
           .scrollTarget=${this.scrollTarget}
@@ -283,7 +263,7 @@ export class InstanceList extends connect(store)(LitElement) {
       `;
     } else {
       return html`
-        <mwc-list>
+        <mwc-list multi>
           ${templateJoin(
             entityMap(
               entityFilter(
