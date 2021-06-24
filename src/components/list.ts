@@ -54,7 +54,7 @@ export class ListItemBase extends CheckListItem {
           text-align: left;
         }
 
-        .mdc-list-item__meta {
+        .mdc-deprecated-list-item__meta {
           width: unset !important;
           height: 24px !important;
         }
@@ -64,9 +64,11 @@ export class ListItemBase extends CheckListItem {
 
   protected renderText() {
     return html`
-      <span class="mdc-list-item__text">
-        <span class="mdc-list-item__primary-text"> ${this.primaryText()} </span>
-        <span class="mdc-list-item__secondary-text">
+      <span class="mdc-deprecated-list-item__text">
+        <span class="mdc-deprecated-list-item__primary-text">
+          ${this.primaryText()}
+        </span>
+        <span class="mdc-deprecated-list-item__secondary-text">
           ${this.secondaryText()}
         </span>
       </span>
@@ -74,13 +76,13 @@ export class ListItemBase extends CheckListItem {
   }
 
   protected renderGraphic() {
-    return html` <span class="mdc-list-item__graphic material-icons">
+    return html` <span class="mdc-deprecated-list-item__graphic material-icons">
       ${this.icon()}
     </span>`;
   }
 
   protected renderMeta() {
-    return html` <span class="mdc-list-item__meta material-icons">
+    return html` <span class="mdc-deprecated-list-item__meta material-icons">
       ${this.meta()}
     </span>`;
   }
@@ -105,7 +107,7 @@ export class ListItemBase extends CheckListItem {
   }
 
   private renderCheckbox() {
-    return html`<span class="mdc-list-item__graphic">
+    return html`<span class="mdc-deprecated-list-item__graphic">
       <mwc-checkbox
         reducedTouchTarget
         tabindex=${this.tabindex}

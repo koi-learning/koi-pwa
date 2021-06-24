@@ -110,7 +110,7 @@ export class ParameterListItem extends LitElement {
   firstUpdated() {
     const observer = new MutationObserver(() => {
       const meta = this.listItem.shadowRoot.querySelector(
-        ".mdc-list-item__meta"
+        ".mdc-deprecated-list-item__meta"
       ) as HTMLSpanElement;
       meta.style.width = "80px";
       observer.disconnect();
