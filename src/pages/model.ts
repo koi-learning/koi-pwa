@@ -8,14 +8,21 @@ import {
 } from "lit-element";
 import { BasePage } from "./base";
 import { Router, RouterLocation } from "@vaadin/router";
-import { Model, ModelId } from "@src/store/interface";
+import { Instance, Model, ModelId } from "@src/store/interface";
 import { RootState, store } from "@src/store/store";
 import { modelKey, delModel, getModel, changeModel } from "@src/store/model";
 import { router } from "..";
 import { ConfirmDialog, InfoDialog } from "@src/components/dialogs";
-import { addInstance, delInstance } from "@src/store/instance";
+import {
+  addInstance,
+  delInstance,
+  InstanceEntityState,
+} from "@src/store/instance";
 import { hasModelRight, loadModelRights } from "@src/rightsHelper";
 import { InstanceList } from "@src/components/instance";
+import { entityFilter, entityMap } from "@src/util";
+import { authenticatedJsonPOST } from "@src/api-helper";
+import { Select } from "@material/mwc-select";
 
 @customElement("koi-model")
 export class ModelPage extends BasePage {
@@ -43,16 +50,20 @@ export class ModelPage extends BasePage {
   deleteDialog: ConfirmDialog;
   @query("#deleteInstancesDialog")
   deleteInstancesDialog: ConfirmDialog;
+  @query("#mergeInstancesDialog")
+  mergeInstancesDialog: ConfirmDialog;
   @query("#finalizeDialog")
   finalizeDialog: ConfirmDialog;
   @query("#infoDialog")
   infoDialog: InfoDialog;
+  @query("#mergeSelect") mergeSelect: Select;
 
   @property()
   private selectionMode = false;
 
   @query("instance-list")
   list: InstanceList;
+  instances: InstanceEntityState;
 
   static get styles() {
     return super.styles.concat(
@@ -81,6 +92,7 @@ export class ModelPage extends BasePage {
   }
 
   stateChanged(state: RootState) {
+    this.instances = state.instances;
     if (this._modelId)
       this.model = state.models.entities[modelKey(this._modelId)];
     this.right = {
@@ -115,11 +127,18 @@ export class ModelPage extends BasePage {
 
   actions(): TemplateResult {
     if (this.selectionMode) {
-      return html`<mwc-icon-button
-        icon="delete_sweep"
-        slot="actionItems"
-        @click=${() => this.deleteInstancesDialog.show()}
-      ></mwc-icon-button>`;
+      return html`
+        <mwc-icon-button
+          icon="mediation"
+          slot="actionItems"
+          @click=${() => this.mergeInstancesDialog.show()}
+        ></mwc-icon-button>
+        <mwc-icon-button
+          icon="delete_sweep"
+          slot="actionItems"
+          @click=${() => this.deleteInstancesDialog.show()}
+        ></mwc-icon-button>
+      `;
     } else if (this.right.edit) {
       return html` ${this.model && !this.model.finalized
           ? html`<mwc-icon-button
@@ -158,6 +177,39 @@ export class ModelPage extends BasePage {
         Are you sure you want to delete the selected instances?
       </confirm-dialog>
 
+      <confirm-dialog id="mergeInstancesDialog" @confirm=${this.mergeInstances}>
+        Select the instance in which the selected instances will be merged.
+
+        <mwc-select
+          id="mergeSelect"
+          fixedMenuPosition
+          label="merge into instance"
+          @closing=${(e) => {
+            e.stopPropagation();
+          }}
+          >${this.model
+            ? entityMap(
+                entityFilter(
+                  this.instances,
+                  (i) =>
+                    i.model_uuid == this.model.model_uuid &&
+                    this.list &&
+                    this.list.selection &&
+                    this.list.selection.find(
+                      (s) => s.instance.instance_uuid == i.instance_uuid
+                    ) === undefined
+                ),
+                this.renderInstanceOptions
+              )
+            : ""}</mwc-select
+        >
+
+        <mwc-button
+          @click=${() => store.dispatch(addInstance({ id: this.model }))}
+          >Create new Instance</mwc-button
+        >
+      </confirm-dialog>
+
       <confirm-dialog id="finalizeDialog" @confirm=${this.finalize}>
         Are you sure you want to finalize this model?
       </confirm-dialog>
@@ -166,6 +218,12 @@ export class ModelPage extends BasePage {
         ${this.info}
       </info-dialog>
     `;
+  }
+
+  renderInstanceOptions(i: Instance): TemplateResult {
+    return html`<mwc-list-item value=${i.instance_uuid}
+      >${i.instance_name}</mwc-list-item
+    >`;
   }
 
   tabs() {
@@ -213,6 +271,16 @@ export class ModelPage extends BasePage {
     for (const listItem of this.list.selection) {
       store.dispatch(delInstance({ id: listItem.instance }));
     }
+  }
+
+  mergeInstances() {
+    authenticatedJsonPOST(
+      store.dispatch,
+      `model/${this.model.model_uuid}/instance/${this.mergeSelect.value}/merge`,
+      {
+        instance_uuid: this.list.selection.map((i) => i.instance.instance_uuid),
+      }
+    );
   }
 
   requestFinialize() {
