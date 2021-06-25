@@ -155,6 +155,7 @@ export class Samples extends connect(store)(LitElement) {
       this.include = [...this.include, tag];
     }
     store.dispatch(resetSample());
+    this.infinity_scroll.reset();
   };
 
   excludeTagToggle = (tag) => {
@@ -164,6 +165,7 @@ export class Samples extends connect(store)(LitElement) {
       this.exclude = [...this.exclude, tag];
     }
     store.dispatch(resetSample());
+    this.infinity_scroll.reset();
   };
 
   renderTags(active, toggle) {
