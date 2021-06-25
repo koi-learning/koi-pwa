@@ -90,7 +90,13 @@ export class ParameterListItem extends LitElement {
       <mwc-list-item
         hasMeta
         twoline
-        @request-selected=${() => this.confirmDialog.show()}
+        @request-selected=${() => {
+          this.confirmDialog.show();
+          setTimeout(() => {
+            this.value_field.select();
+            this.value_field.focus();
+          }, 0);
+        }}
         style="text-align: left;"
         graphic="avatar"
       >
