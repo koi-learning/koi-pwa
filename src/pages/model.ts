@@ -181,6 +181,7 @@ export class ModelPage extends BasePage {
         Select the instance in which the selected instances will be merged.
 
         <mwc-select
+          style="width: 100%;"
           id="mergeSelect"
           fixedMenuPosition
           label="merge into instance"
@@ -192,6 +193,7 @@ export class ModelPage extends BasePage {
                 entityFilter(
                   this.instances,
                   (i) =>
+                    i.finalized &&
                     i.model_uuid == this.model.model_uuid &&
                     this.list &&
                     this.list.selection &&
@@ -202,11 +204,6 @@ export class ModelPage extends BasePage {
                 this.renderInstanceOptions
               )
             : ""}</mwc-select
-        >
-
-        <mwc-button
-          @click=${() => store.dispatch(addInstance({ id: this.model }))}
-          >Create new Instance</mwc-button
         >
       </confirm-dialog>
 
