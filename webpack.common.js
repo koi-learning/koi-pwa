@@ -34,7 +34,19 @@ module.exports = {
                 },
             },
             {
-                test: /\.scss$/,
+                test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+                use: [
+                  {
+                    loader: 'file-loader',
+                    options: {
+                      name: '[name].[ext]',
+                      outputPath: 'fonts/'
+                    }
+                  }
+                ]
+            },
+            {
+                test: /\.(sass|css|scss)$/,
                 use: [
                     {
                         loader: 'file-loader',
@@ -42,8 +54,9 @@ module.exports = {
                             name: 'bundle.css',
                         },
                     },
-                    { loader: 'extract-loader' },
+                    { loader: 'extract-loader' }, 
                     { loader: 'css-loader' },
+                    { loader: 'resolve-url-loader'},
                     {
                         loader: 'sass-loader',
                         options: {
@@ -55,6 +68,7 @@ module.exports = {
                             sassOptions: {
                                 includePaths: ['node_modules'],
                             },
+                            sourceMap: true
                         },
                     },
                 ],
