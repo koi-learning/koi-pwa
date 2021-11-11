@@ -9,6 +9,8 @@
     "lint-fix": "eslint . --fix"
   },
   "dependencies": {
+    "@fontsource/material-icons": "^4.5.0",
+    "@fontsource/roboto": "^4.5.1",
     "@material/mwc-button": "^0.21.0",
     "@material/mwc-checkbox": "^0.21.0",
     "@material/mwc-dialog": "^0.21.0",
@@ -42,6 +44,7 @@
     "lit-element": "^2.4.0",
     "prettier": "^2.1.2",
     "pwa-helpers": "^0.9.1",
+    "resolve-url-loader": "^4.0.0",
     "sass": "^1.29.0",
     "sass-loader": "^10.1.0",
     "ts-loader": "^8.0.11",
