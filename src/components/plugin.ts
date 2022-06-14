@@ -47,17 +47,17 @@ const frameContent = html`
             const message = { type: "descriptor", data: data };
             window.parent.postMessage(message, "*");
           };
-          
+
           const do_tag = function (data) {
             const message = { type: "tag", data: data };
             window.parent.postMessage(message, "*");
-          }
+          };
 
           switch (e.data.type) {
             case "sample":
               if (e.data.tags == undefined) {
                 e.data.tags = [];
-              }                
+              }
               eval(e.data.code);
               display(e.data.data, e.data.descriptor, vw, vh, e.data.tags);
               break;
@@ -136,7 +136,7 @@ export class PluginSandbox extends LitElement {
         tags: this.tags,
       };
       this.iframe.contentWindow.postMessage(message, "*");
-    };
+    }
   }
 
   messageListener = (e) => {
