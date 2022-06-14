@@ -41,19 +41,25 @@ const frameContent = html`
           const do_label = function (data) {
             const message = { type: "label", data: data };
             window.parent.postMessage(message, "*");
-            console.log("label");
           };
 
           const do_descriptor = function (data) {
             const message = { type: "descriptor", data: data };
             window.parent.postMessage(message, "*");
-            console.log("descriptor");
           };
+          
+          const do_tag = function (data) {
+            const message = { type: "tag", data: data };
+            window.parent.postMessage(message, "*");
+          }
 
           switch (e.data.type) {
             case "sample":
+              if (e.data.tags == undefined) {
+                e.data.tags = [];
+              }                
               eval(e.data.code);
-              display(e.data.data, e.data.descriptor, vw, vh);
+              display(e.data.data, e.data.descriptor, vw, vh, e.data.tags);
               break;
           }
         });
@@ -70,6 +76,7 @@ export class PluginSandbox extends LitElement {
   @property() code: string;
   @property() data;
   @property() descriptor;
+  @property() tags;
 
   @query("iframe") iframe: HTMLIFrameElement;
 
@@ -88,7 +95,8 @@ export class PluginSandbox extends LitElement {
     if (
       changedProperties.has("data") ||
       changedProperties.has("descriptor") ||
-      changedProperties.has("code")
+      changedProperties.has("code") ||
+      changedProperties.has("tags")
     ) {
       if (this.iframe && this.descriptor && this.data && this.code) {
         const message = {
@@ -96,6 +104,7 @@ export class PluginSandbox extends LitElement {
           code: this.code,
           data: this.data,
           descriptor: this.descriptor,
+          tags: this.tags,
         };
         this.iframe.contentWindow.postMessage(message, "*");
       }
@@ -124,9 +133,10 @@ export class PluginSandbox extends LitElement {
         code: this.code,
         data: this.data,
         descriptor: this.descriptor,
+        tags: this.tags,
       };
       this.iframe.contentWindow.postMessage(message, "*");
-    }
+    };
   }
 
   messageListener = (e) => {
@@ -137,6 +147,11 @@ export class PluginSandbox extends LitElement {
       this.dispatchEvent(event);
     } else if (e.data.type && e.data.type == "descriptor") {
       const event = new CustomEvent("plugin-descriptor", {
+        detail: e.data.data,
+      });
+      this.dispatchEvent(event);
+    } else if (e.data.type && e.data.type == "tag") {
+      const event = new CustomEvent("plugin-tag", {
         detail: e.data.data,
       });
       this.dispatchEvent(event);
