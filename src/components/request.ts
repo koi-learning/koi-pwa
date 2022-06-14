@@ -21,6 +21,7 @@ import {
   authenticatedFetch,
   authenticatedJsonGET,
   authenticatedJsonPOST,
+  authenticatedJsonPUT,
 } from "@src/api-helper";
 import { entityFind } from "@src/util";
 import { getSample } from "@src/store/samples";
@@ -39,6 +40,7 @@ export class Request extends connect(store)(LitElement) {
   @property() request: LabelRequest;
   @property() data: Promise<unknown[]>;
   @property() descriptor: Promise<unknown[]>;
+  @property() tags: Promise<unknown[]>;
 
   static get styles() {
     return css`
@@ -75,6 +77,7 @@ export class Request extends connect(store)(LitElement) {
     if (changedProperties.has("sample")) {
       this.data = this.fetchData(this.sample);
       this.descriptor = this.fetchDescriptor(this.sample);
+      this.tags = this.fetchTags(this.sample);
     }
   }
 
@@ -116,6 +119,13 @@ export class Request extends connect(store)(LitElement) {
     }, {});
   }
 
+  async fetchTags(sample: Sample) {
+    return await authenticatedJsonGET(
+      store.dispatch,
+      `model/${sample.model_uuid}/instance/${sample.instance_uuid}/sample/${sample.sample_uuid}/tags`
+    );
+  }
+
   async fetchDescriptor(sample: Sample) {
     const data = await authenticatedJsonGET(
       store.dispatch,
@@ -146,15 +156,21 @@ export class Request extends connect(store)(LitElement) {
   }
 
   render() {
-    return html`
-      <plugin-sandbox
-        .data=${until(this.data)}
-        .descriptor=${until(this.descriptor)}
-        .code=${this.code}
-        @plugin-label=${this.plugin_label}
-        @plugin-descriptor=${this.plugin_descriptor}
-      ></plugin-sandbox>
-    `;
+    if (this.request) {
+      return html`
+        <plugin-sandbox
+          .data=${until(this.data)}
+          .descriptor=${until(this.descriptor)}
+          .code=${this.code}
+          .tags=${until(this.tags)}
+          @plugin-label=${this.plugin_label}
+          @plugin-descriptor=${this.plugin_descriptor}
+          @plugin-tag=${this.plugin_tag}
+        ></plugin-sandbox>
+      `;
+    } else {
+      return html` <div>no requests...</div> `;
+    }
   }
 
   plugin_label(e) {
@@ -163,6 +179,10 @@ export class Request extends connect(store)(LitElement) {
 
   plugin_descriptor(e) {
     this.addDescriptors(e.detail);
+  }
+
+  plugin_tag(e) {
+    this.addTags(e.detail);
   }
 
   async addLabels(data) {
@@ -182,6 +202,18 @@ export class Request extends connect(store)(LitElement) {
       if (d.data_uuid) {
       } else {
         await this.addDescriptor(d.key, d.data);
+      }
+    }
+    store.dispatch(
+      changeLabelRequest({ id: this.request, data: { obsolete: true } })
+    );
+  }
+
+  async addTags(data) {
+    for (const d of data) {
+      if (d.data_uuid) {
+      } else {
+        await this.addTag(d.name);
       }
     }
     store.dispatch(
@@ -222,6 +254,14 @@ export class Request extends connect(store)(LitElement) {
         method: "POST",
         body: data,
       }
+    );
+  }
+
+  async addTag(name) {
+    await authenticatedJsonPUT(
+      store.dispatch,
+      `model/${this.request.model_uuid}/instance/${this.request.instance_uuid}/sample/${this.request.sample_uuid}/tags`,
+      [{ name: name }]
     );
   }
 }
