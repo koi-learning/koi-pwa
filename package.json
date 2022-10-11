@@ -1,6 +1,6 @@
 {
   "name": "koi-pwa",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "license": "LGPL-3.0-or-later",
   "scripts": {
     "start": "webpack-cli serve --mode development --config webpack.dev.js",
