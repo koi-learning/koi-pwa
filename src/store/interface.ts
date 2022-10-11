@@ -121,6 +121,7 @@ export interface InstanceData {
   instance_description: string;
   has_inference: boolean;
   has_training: boolean;
+  has_requests: boolean;
   finalized: boolean;
 }
 
