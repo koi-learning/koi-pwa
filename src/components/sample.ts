@@ -34,6 +34,7 @@ import { entityFilter, entityMap } from "@src/util";
 import { authenticatedFetch, authenticatedJsonGET } from "@src/api-helper";
 import { connect } from "pwa-helpers";
 import { until } from "lit-html/directives/until.js";
+import { SampleDetailDialog } from "./dialogs";
 
 @customElement("sample-cards")
 export class Samples extends connect(store)(LitElement) {
@@ -51,6 +52,9 @@ export class Samples extends connect(store)(LitElement) {
 
   @query("infinity-scroll")
   infinity_scroll: InfinityScroll;
+
+  @query("sample-detail-dialog")
+  sampleDetailDialog: SampleDetailDialog;
 
   update(changedProperties) {
     super.update(changedProperties);
@@ -199,6 +203,9 @@ export class Samples extends connect(store)(LitElement) {
         including: ${this.renderTags(this.include, this.includeTagToggle)}<br />
         excluding: ${this.renderTags(this.exclude, this.excludeTagToggle)}
       </paper-card>
+      <sample-detail-dialog id="sampleDetailDialog">
+        <div>WORKS!</div>
+      </sample-detail-dialog>
       ${entityMap(
         entityFilter(
           this.samples,
@@ -218,6 +225,15 @@ export class Samples extends connect(store)(LitElement) {
             <mwc-button
               @click=${() => store.dispatch(delSample({ id: sample }))}
               >delete</mwc-button
+            >
+            <mwc-button
+              @click=${() =>
+                this.sampleDetailDialog.show(
+                  until(this.data(sample)),
+                  until(this.descriptor(sample)),
+                  this.code
+                )}
+              >detail</mwc-button
             >
           </div>
         </paper-card>`
