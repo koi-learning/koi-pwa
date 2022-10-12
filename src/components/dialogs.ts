@@ -97,6 +97,56 @@ export class ConfirmDialog extends LitElement {
   };
 }
 
+@customElement("sample-detail-dialog")
+export class SampleDetailDialog extends LitElement {
+  @query("mwc-dialog")
+  dialog: Dialog;
+
+  @property() data;
+  @property() descriptor;
+  @property() code;
+
+  show(data, descriptor, code) {
+    this.data = data;
+    this.descriptor = descriptor;
+    this.code = code;
+    this.dialog.show();
+  }
+
+  static get styles() {
+    return css`
+      #sampleDetailDialog {
+        --mdc-dialog-min-width: 90vw;
+        --mdc-dialog-max-width: 91vw;
+        --mdc-dialog-max-height: 91vh;
+      }
+
+      #sample-dialog-content {
+        height: 75vh;
+      }
+    `;
+    return css`
+      div.sample-dialog-content {
+        width: 120px;
+        height: 120px;
+      }
+    `;
+  }
+
+  render() {
+    return html` <mwc-dialog id="sampleDetailDialog">
+      <div id="sample-dialog-content">
+        <plugin-sandbox
+          .data=${this.data}
+          .descriptor=${this.descriptor}
+          .code=${this.code}
+        ></plugin-sandbox>
+      </div>
+      <mwc-button slot="primaryAction" dialogAction="ok"> OK </mwc-button>
+    </mwc-dialog>`;
+  }
+}
+
 @customElement("info-dialog")
 export class InfoDialog extends LitElement {
   @query("mwc-dialog")

@@ -89,6 +89,14 @@ export class InstanceDetails extends LitElement {
     return html`
       <span style="display: flex">
         <span
+          class="${this.instance.has_requests
+            ? "state-icon active"
+            : "state-icon"}"
+        >
+          <mwc-icon>quickreply</mwc-icon>
+          Requests
+        </span>
+        <span
           class="${this.instance.has_inference
             ? "state-icon active"
             : "state-icon"}"
@@ -189,6 +197,12 @@ export class InstanceListItem extends ListItemBase {
 
   protected meta() {
     return html`
+      <mwc-icon
+        class="${this.instance.has_requests
+          ? "state-icon active"
+          : "state-icon"}"
+        >quickreply</mwc-icon
+      >
       <mwc-icon
         class="${this.instance.has_inference
           ? "state-icon active"
