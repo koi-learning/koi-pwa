@@ -112,7 +112,7 @@ export class UsersPage extends BasePage {
           <mwc-textfield
             label="Name"
             value=${user.user_name}
-            @change=${(e) => changeName(e.path[0].value)}
+            @change=${(e) => changeName(e.composedPath()[0].value)}
           >
           </mwc-textfield>
           <mwc-button
