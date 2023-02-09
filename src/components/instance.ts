@@ -132,7 +132,7 @@ export class InstanceDetails extends LitElement {
           label="Name"
           value=${this.instance.instance_name}
           @change=${(e) =>
-            this.updateInstance({ instance_name: e.path[0].value })}
+            this.updateInstance({ instance_name: e.composedPath()[0].value })}
         ></mwc-textfield>
         <mwc-textarea
           label="Description"
@@ -140,7 +140,7 @@ export class InstanceDetails extends LitElement {
           maxLength="500"
           value=${this.instance.instance_description}
           @change=${(e) =>
-            this.updateInstance({ instance_description: e.path[0].value })}
+            this.updateInstance({ instance_description: e.composedPath()[0].value })}
         ></mwc-textarea>
       `;
     } else {
