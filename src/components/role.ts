@@ -103,7 +103,9 @@ export class GeneralAccessCards extends LitElement {
     };
     const changeName = (e) => {
       this.dispatchEvent(
-        new CustomEvent("change", { detail: { role_name: e.composedPath()[0].value } })
+        new CustomEvent("change", {
+          detail: { role_name: e.composedPath()[0].value },
+        })
       );
     };
     const changeDescription = (e) => {
