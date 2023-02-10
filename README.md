@@ -11,6 +11,12 @@ To run the application in debug mode, you need to install the following tools:
 In the koi-pwa directory, you can run:
 - npm start
 
-No by default the PWA is accessible at [http://localhost:8080](http://localhost:8080)
+Now by default the PWA is accessible at [http://localhost:8080](http://localhost:8080)
 
-To change the KOI Api - Base Url in Chrome, you need to adapt the apiBase Value in Application -> LocalStorage -> apiBase
+The PWA needs an [KOI-Api](https://github.com/koi-learning/koi-api) instance to run.
+Connect your local or remote API by setting the ```apiBase``` variable in your browsers local storage.
+
+For Chrome do the following:
+- open the development console
+- Application -> LocalStorage -> apiBase
+- enter the full url to the service endpoint
