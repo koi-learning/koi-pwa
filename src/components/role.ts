@@ -38,7 +38,7 @@ import { CRUDEntityState } from "@src/store/crud";
 
 @customElement("role-card")
 export class GeneralAccessCards extends LitElement {
-  @property() role: AbstractRole;
+  @property() aRole: AbstractRole;
 
   static get styles() {
     return css`
@@ -75,7 +75,7 @@ export class GeneralAccessCards extends LitElement {
       page: true,
       loading: true,
     };
-    return Object.keys(this.role).filter((key) => !abstractKeys[key]);
+    return Object.keys(this.aRole).filter((key) => !abstractKeys[key]);
   }
 
   renderOption = (option: string) => {
@@ -88,7 +88,7 @@ export class GeneralAccessCards extends LitElement {
     };
     return html`
       <mwc-check-list-item
-        ?selected=${this.role[option]}
+        ?selected=${this.aRole[option]}
         @request-selected=${changeOption}
       >
         ${option}
@@ -103,13 +103,15 @@ export class GeneralAccessCards extends LitElement {
     };
     const changeName = (e) => {
       this.dispatchEvent(
-        new CustomEvent("change", { detail: { role_name: e.path[0].value } })
+        new CustomEvent("change", {
+          detail: { role_name: e.composedPath()[0].value },
+        })
       );
     };
     const changeDescription = (e) => {
       this.dispatchEvent(
         new CustomEvent("change", {
-          detail: { role_description: e.path[0].value },
+          detail: { role_description: e.composedPath()[0].value },
         })
       );
     };
@@ -118,7 +120,7 @@ export class GeneralAccessCards extends LitElement {
         <div class="card-content">
           <mwc-textfield
             label="Name"
-            value=${this.role.role_name}
+            value=${this.aRole.role_name}
             @change=${changeName}
           >
           </mwc-textfield>
@@ -126,7 +128,7 @@ export class GeneralAccessCards extends LitElement {
             label="Description"
             charCounter
             maxLength="500"
-            value=${this.role.role_description}
+            value=${this.aRole.role_description}
             @change=${changeDescription}
           ></mwc-textarea>
           <mwc-list multi> ${options.map(this.renderOption)} </mwc-list>
@@ -150,7 +152,7 @@ abstract class RoleCards extends connect(store)(LitElement) {
         this.roles,
         (role) =>
           html`<role-card
-            .role=${role}
+            .aRole=${role}
             @change=${(e) =>
               store.dispatch(this.changeRole({ id: role, data: e.detail }))}
             @del=${() => store.dispatch(this.delRole({ id: role }))}

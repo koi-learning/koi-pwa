@@ -100,16 +100,19 @@ export class ModelDetails extends LitElement {
         <mwc-textfield
           label="Name"
           value=${this.model.model_name}
-          @change=${(e) => this.updateModel({ model_name: e.path[0].value })}
-        ></mwc-textfield>
+          @change=${(e) =>
+            this.updateModel({ model_name: e.composedPath()[0].value })}
+        >
+        </mwc-textfield>
         <mwc-textarea
           label="Description"
           charCounter
           maxLength="500"
           value=${this.model.model_description}
           @change=${(e) =>
-            this.updateModel({ model_description: e.path[0].value })}
-        ></mwc-textarea>
+            this.updateModel({ model_description: e.composedPath()[0].value })}
+        >
+        </mwc-textarea>
       `;
     } else {
       return html`<div>

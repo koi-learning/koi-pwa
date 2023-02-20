@@ -43,7 +43,7 @@ import { CRUDEntityState } from "@src/store/crud";
 
 @customElement("access-card")
 export class AccessCard extends LitElement {
-  @property() role: GeneralRole | ModelRole | InstanceRole; // Todo Unify Type
+  @property() aRole: GeneralRole | ModelRole | InstanceRole; // Todo Unify Type
   @property() users: UserEntityState;
   @property() access:
     | EntityState<GeneralAccess>
@@ -61,7 +61,7 @@ export class AccessCard extends LitElement {
     if (
       this.users &&
       this.access &&
-      (changedProperties.has("role") ||
+      (changedProperties.has("aRole") ||
         changedProperties.has("users") ||
         changedProperties.has("access"))
     ) {
@@ -71,7 +71,7 @@ export class AccessCard extends LitElement {
             this.access.ids.find(
               (id) =>
                 this.access.entities[id].user_uuid == user &&
-                this.access.entities[id].role_uuid == this.role.role_uuid
+                this.access.entities[id].role_uuid == this.aRole.role_uuid
             ) != null
         )
         .map((id) => this.users.entities[id]);
@@ -81,7 +81,7 @@ export class AccessCard extends LitElement {
             this.access.ids.find(
               (id) =>
                 this.access.entities[id].user_uuid == user &&
-                this.access.entities[id].role_uuid == this.role.role_uuid
+                this.access.entities[id].role_uuid == this.aRole.role_uuid
             ) == null
         )
         .map((id) => this.users.entities[id]);
@@ -135,7 +135,7 @@ export class AccessCard extends LitElement {
         <ul class="card-content">
           <li class="list-item header">
             <mwc-icon class="inverted">people</mwc-icon>
-            <span>${this.role.role_name}</span>
+            <span>${this.aRole.role_name}</span>
           </li>
           <li class="divider"></li>
           <li class="list-item add-section">
@@ -225,7 +225,7 @@ export class AccessCard extends LitElement {
       }
 
       .header > span::after {
-        content: " role";
+        content: " Role";
       }
 
       .list-item > mwc-icon-button {
@@ -264,7 +264,7 @@ export abstract class AccessCards extends connect(store)(LitElement) {
         this.roles,
         (role) =>
           html`<access-card
-            .role=${role}
+            .aRole=${role}
             .access=${this.access}
             .users=${this.users}
             @addAccess=${(e) => this.addAccess(role, e.detail.user)}
