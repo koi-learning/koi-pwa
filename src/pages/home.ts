@@ -1,4 +1,5 @@
-import { html, customElement, css } from "lit-element";
+import { html, css } from "lit";
+import { customElement } from "lit/decorators.js";
 import { BasePage } from "./base";
 
 @customElement("page-home")

@@ -6,7 +6,10 @@ As such it allows the user to create, train, and deploy ML-solutions.
 
 # Debug requirements
 To run the application in debug mode, you need to install the following tools:
-- Install: [Node.js](https://nodejs.org/en/) (<= 16.19.0)
+- Install: [Node.js](https://nodejs.org/en/) (18 LTS)
+
+Then run 
+- npm install
 
 In the koi-pwa directory, you can run:
 - npm start

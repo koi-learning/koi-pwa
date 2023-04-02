@@ -13,7 +13,7 @@
 // GNU Lesser General Public License is distributed along with this
 // software and can be found at http://www.gnu.org/licenses/lgpl.html
 
-import { LitElement } from "lit-element";
+import { LitElement } from "lit";
 
 export class LightLitElement extends LitElement {
   createRenderRoot() {

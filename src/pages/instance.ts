@@ -1,11 +1,5 @@
-import {
-  customElement,
-  TemplateResult,
-  property,
-  query,
-  html,
-  css,
-} from "lit-element";
+import { TemplateResult, html, css } from "lit";
+import { customElement, property, query } from "lit/decorators.js";
 import { BasePage } from "./base";
 ("./base");
 import { RouterLocation } from "@vaadin/router";
@@ -64,9 +58,8 @@ export class InstancePage extends BasePage {
         instance_uuid: this.location.params.instance_id as string,
       };
       loadInstanceRights(this._instanceId, store.dispatch);
-      this.instance = store.getState().instances.entities[
-        instanceKey(this._instanceId)
-      ];
+      this.instance =
+        store.getState().instances.entities[instanceKey(this._instanceId)];
       store.dispatch(getInstance({ id: this._instanceId }));
     }
   }
@@ -100,11 +93,13 @@ export class InstancePage extends BasePage {
 
   actions(): TemplateResult {
     return html` ${this.instance && !this.instance.finalized
-        ? html`<mwc-icon-button
-            icon="check_circle"
-            slot="actionItems"
-            @click=${() => this.finalizeDialog.show()}
-          ></mwc-icon-button>`
+        ? html`
+            <mwc-icon-button
+              icon="check_circle"
+              slot="actionItems"
+              @click=${() => this.finalizeDialog.show()}
+            ></mwc-icon-button>
+          `
         : ""}
       <mwc-icon-button
         icon="delete"

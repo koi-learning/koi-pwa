@@ -14,7 +14,8 @@
 // software and can be found at http://www.gnu.org/licenses/lgpl.html
 
 import { Sample, Instance, LabelRequest } from "@src/store/interface";
-import { customElement, LitElement, property, html, css } from "lit-element";
+import { LitElement, html, css } from "lit";
+import { customElement, property } from "lit/decorators.js";
 import { connect } from "pwa-helpers";
 import { store, RootState } from "@src/store/store";
 import {

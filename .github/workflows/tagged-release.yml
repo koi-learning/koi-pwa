@@ -3,7 +3,10 @@ name: "tagged-release"
 on:
   push:
     tags:
-      - "v*"
+      - "v*.*.*"
+
+env:
+  IMAGE_NAME: "koi-pwa"
 
 jobs:
   tagged-release:
@@ -12,22 +15,54 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
+
       - name: Install modules
-        run: yarn install --frozen-lockfile
+        run: npm install
+
       - name: Lint
-        run: yarn lint
+        run: npm run lint
+
       - name: Build
-        run: yarn build
-      - name: Package Release
+        run: npm run build
+
+      - name: Bundle Release
         run: zip -r dist.zip dist
-      - uses: "marvinpinto/action-automatic-releases@latest"
+
+      - name: Build Dokcer Image
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
+
+      - name: publish the package as Release v*.*.*
+        uses: softprops/action-gh-release@v1
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          prerelease: false
+          name: "Release ${{ github.ref_name }}"
+          body_path: CHANGELOG.md
+          generate_release_notes: false
           files: dist.zip
+
+      - name: Login to GHCR.io
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+      
+      - name: Push Docker Image
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
+        

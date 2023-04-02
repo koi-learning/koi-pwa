@@ -1,13 +1,7 @@
 import { connect } from "pwa-helpers";
 import { store } from "@src/store/store";
-import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
-  query,
-  css,
-} from "lit-element";
+import { LitElement, html, TemplateResult, css } from "lit";
+import { property, query } from "lit/decorators.js";
 import { installMediaQueryWatcher } from "pwa-helpers/media-query.js";
 import { Drawer } from "@material/mwc-drawer";
 import { TopAppBar } from "@material/mwc-top-app-bar";
@@ -87,6 +81,14 @@ export abstract class BasePage extends connect(store)(LitElement) {
     });
   }
 
+  toggleDrawer() {
+    this.drawer.open = !this.drawer.open;
+  }
+
+  goBack() {
+    history.back();
+  }
+
   render() {
     let navigationIcon = this.smallScreen
       ? html`<mwc-icon-button
@@ -116,9 +118,8 @@ export abstract class BasePage extends connect(store)(LitElement) {
                   <mwc-tab-bar
                     slot="tabs"
                     @MDCTabBar:activated=${(e) =>
-                      (this.activeTab = this.availableTabs[
-                        e.detail.index
-                      ].name)}
+                      (this.activeTab =
+                        this.availableTabs[e.detail.index].name)}
                   >
                     ${this.availableTabs.map(
                       (t) => html`<mwc-tab label="${t.label}"></mwc-tab>`
@@ -144,21 +145,14 @@ export abstract class BasePage extends connect(store)(LitElement) {
         const slot = document.createElement("slot");
         slot.name = "tabs";
         div.appendChild(slot);
-        (this.appBar.shadowRoot
-          .lastElementChild as HTMLElement).style.paddingTop = "112px";
+        (
+          this.appBar.shadowRoot.lastElementChild as HTMLElement
+        ).style.paddingTop = "112px";
         this.appBar.shadowRoot.firstElementChild.appendChild(div);
         observer.disconnect();
       });
       observer.observe(this.appBar.shadowRoot, { childList: true });
     }
-  }
-
-  toggleDrawer() {
-    this.drawer.open = !this.drawer.open;
-  }
-
-  goBack() {
-    history.back();
   }
 
   abstract head(): TemplateResult;

@@ -1,5 +1,6 @@
 import { LightLitElement } from "@src/components/light-element";
-import { html, customElement } from "lit-element";
+import { html } from "lit";
+import { customElement } from "lit/decorators.js";
 import "./imports";
 import { connect } from "pwa-helpers";
 import { store, RootState } from "./store/store";

@@ -13,16 +13,10 @@
 // GNU Lesser General Public License is distributed along with this
 // software and can be found at http://www.gnu.org/licenses/lgpl.html
 
-import {
-  LitElement,
-  property,
-  query,
-  html,
-  css,
-  TemplateResult,
-} from "lit-element";
+import { LitElement, html, css, TemplateResult } from "lit";
+import { property, query } from "lit/decorators.js";
 import { GraphicType } from "@material/mwc-list/mwc-list-item-base";
-import { Checkbox } from "@material/mwc-checkbox/mwc-checkbox";
+import { Checkbox } from "@material/mwc-checkbox";
 import { List } from "@material/mwc-list";
 
 import { CheckListItem } from "@material/mwc-list/mwc-check-list-item";
@@ -123,7 +117,7 @@ export class ListItemBase extends CheckListItem {
   }
 
   protected async onChange(evt: Event) {
-    const checkbox = evt.target as Checkbox;
+    const checkbox = evt.target as unknown as Checkbox;
 
     if (this.selected !== checkbox.checked) {
       this.selected = checkbox.checked;

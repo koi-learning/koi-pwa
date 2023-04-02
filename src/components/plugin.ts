@@ -13,17 +13,10 @@
 // GNU Lesser General Public License is distributed along with this
 // software and can be found at http://www.gnu.org/licenses/lgpl.html
 
-import {
-  html,
-  customElement,
-  property,
-  TemplateResult,
-  LitElement,
-  query,
-  css,
-} from "lit-element";
+import { html, TemplateResult, LitElement, css } from "lit";
+import { customElement, property, query } from "lit/decorators.js";
 
-const frameContent = html`
+const frameContent = `
   <!DOCTYPE html>
   <html style="width:100%; height:100%;">
     <head>
@@ -126,7 +119,7 @@ export class PluginSandbox extends LitElement {
   }
 
   firstUpdated() {
-    this.iframe.contentWindow.document.write(frameContent.getHTML());
+    this.iframe.contentWindow.document.write(frameContent);
     if (this.descriptor && this.data && this.code) {
       const message = {
         type: "sample",
