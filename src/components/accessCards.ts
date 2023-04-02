@@ -13,15 +13,8 @@
 // GNU Lesser General Public License is distributed along with this
 // software and can be found at http://www.gnu.org/licenses/lgpl.html
 
-import {
-  LitElement,
-  css,
-  property,
-  query,
-  html,
-  TemplateResult,
-  customElement,
-} from "lit-element";
+import { LitElement, css, html, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators.js";
 import {
   GeneralRole,
   ModelRole,
@@ -124,7 +117,7 @@ export class AccessCard extends LitElement {
       <span>${user.user_name}</span>
       <mwc-icon-button
         icon="delete"
-        @click="${() => this.removeAccess(user)}}"
+        @click="${() => this.removeAccess(user)}"
       ></mwc-icon-button>
     </li>`;
   };

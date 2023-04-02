@@ -1,11 +1,5 @@
-import {
-  customElement,
-  TemplateResult,
-  property,
-  html,
-  query,
-  css,
-} from "lit-element";
+import { TemplateResult, html, css } from "lit";
+import { customElement, property, query } from "lit/decorators.js";
 import { BasePage } from "./base";
 import { Router, RouterLocation } from "@vaadin/router";
 import { Instance, Model, ModelId } from "@src/store/interface";

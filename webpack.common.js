@@ -35,26 +35,19 @@ module.exports = {
             },
             {
                 test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-                use: [
-                  {
-                    loader: 'file-loader',
-                    options: {
-                      name: '[name].[ext]',
-                      outputPath: 'fonts/'
-                    }
-                  }
-                ]
+                type: 'asset/resource',
             },
             {
                 test: /\.(sass|css|scss)$/,
                 use: [
-                    {
+                    /*{
                         loader: 'file-loader',
                         options: {
                             name: 'bundle.css',
                         },
                     },
-                    { loader: 'extract-loader' }, 
+                    { loader: 'extract-loader' }, */
+                    { loader: 'style-loader' }, 
                     { loader: 'css-loader' },
                     { loader: 'resolve-url-loader'},
                     {

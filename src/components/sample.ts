@@ -13,14 +13,8 @@
 // GNU Lesser General Public License is distributed along with this
 // software and can be found at http://www.gnu.org/licenses/lgpl.html
 
-import {
-  LitElement,
-  customElement,
-  property,
-  html,
-  query,
-  css,
-} from "lit-element";
+import { LitElement, html, css } from "lit";
+import { customElement, property, query } from "lit/decorators.js";
 import { Instance, Sample, Tag } from "@src/store/interface";
 import {
   SampleEntityState,

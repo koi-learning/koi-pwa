@@ -13,7 +13,7 @@
 // GNU Lesser General Public License is distributed along with this
 // software and can be found at http://www.gnu.org/licenses/lgpl.html
 
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 
 module.exports = merge(common, {

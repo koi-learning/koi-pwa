@@ -13,7 +13,8 @@
 // GNU Lesser General Public License is distributed along with this
 // software and can be found at http://www.gnu.org/licenses/lgpl.html
 
-import { LitElement, property, customElement } from "lit-element";
+import { LitElement } from "lit";
+import { property, customElement } from "lit/decorators.js";
 
 @customElement("infinity-scroll")
 export class InfinityScroll extends LitElement {

@@ -2,7 +2,8 @@ import { ConfirmDialog } from "@src/components/dialogs";
 import { InstanceList } from "@src/components/instance";
 import { delInstance } from "@src/store/instance";
 import { store } from "@src/store/store";
-import { html, customElement, css, property, query } from "lit-element";
+import { html, css } from "lit";
+import { customElement, property, query } from "lit/decorators.js";
 import { BasePage } from "./base";
 
 @customElement("koi-instances")

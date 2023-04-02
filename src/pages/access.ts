@@ -1,4 +1,5 @@
-import { customElement, TemplateResult, html } from "lit-element";
+import { TemplateResult, html } from "lit";
+import { customElement } from "lit/decorators.js";
 import { BasePage } from "./base";
 
 @customElement("page-access")
