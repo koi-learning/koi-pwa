@@ -10,6 +10,7 @@ COPY nginx-template.conf /nginx-template.conf
 ENV PORT 80
 ENV DOLLAR $
 ENV API_URL http://localhost:8080
+ENV MAX_PAYLOAD_SIZE 500M
 
 EXPOSE 80
 
